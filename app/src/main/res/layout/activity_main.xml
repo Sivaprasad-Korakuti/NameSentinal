@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_root"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:fontFamily="sans-serif"
+            android:gravity="center"
+            android:letterSpacing="0.25"
+            android:text="NAME SENTINEL"
+            android:textColor="#22D3EE"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="sans-serif"
+            android:gravity="center"
+            android:text="VOICE-AWARE EARBUD GUARDIAN"
+            android:textColor="#8AA0C8"
+            android:textSize="13sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="center"
+            android:text=""
+            android:textColor="#8822D3EE" />
+
+        <WebView
+            android:id="@+id/scene"
+            android:layout_width="match_parent"
+            android:layout_height="340dp"
+            android:layout_marginTop="4dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+            <TextView android:id="@+id/chRobot" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/bg_field" android:padding="10dp" android:text="🤖 Nova" android:textColor="#E6ECFF" android:textSize="13sp" />
+            <TextView android:id="@+id/chOwl" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:background="@drawable/bg_field" android:padding="10dp" android:text="🦉 Hoot" android:textColor="#E6ECFF" android:textSize="13sp" />
+            <TextView android:id="@+id/chAlien" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:background="@drawable/bg_field" android:padding="10dp" android:text="👽 Zog" android:textColor="#E6ECFF" android:textSize="13sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
+            android:gravity="center"
+            android:text="Guard is resting"
+            android:textColor="#8AA0C8"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvBt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:text="Bluetooth not scanned yet"
+            android:textColor="#8AA0C8"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/tvTranscript"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_field"
+            android:fontFamily="sans-serif"
+            android:gravity="center"
+            android:minHeight="64dp"
+            android:padding="12dp"
+            android:text="Tap your sentinel to begin…"
+            android:textColor="#E6ECFF"
+            android:textSize="14sp"
+            android:textStyle="italic" />
+
+        <TextView
+            android:id="@+id/tvAlert"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="🔔 SOMEONE IS CALLING YOU"
+            android:textColor="#FF6B81"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnToggle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:paddingVertical="14dp"
+            android:text="Enable Auto-Guard"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:cornerRadius="28dp" />
+
+        <TextView
+            android:id="@+id/btnTest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="🔔 Test the alert in my earbuds"
+            android:textColor="#E879F9"
+            android:textSize="13sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/bg_card"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Names to listen for (comma-separated)"
+                android:textColor="#8AA0C8"
+                android:textSize="12sp" />
+
+            <EditText
+                android:id="@+id/etWake"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/bg_field"
+                android:inputType="textNoSuggestions"
+                android:padding="12dp"
+                android:textColor="#E6ECFF"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Voice alert message"
+                android:textColor="#8AA0C8"
+                android:textSize="12sp" />
+
+            <EditText
+                android:id="@+id/etMsg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/bg_field"
+                android:inputType="textNoSuggestions"
+                android:padding="12dp"
+                android:textColor="#E6ECFF"
+                android:textSize="14sp" />
+
+            <androidx.appcompat.widget.SwitchCompat android:id="@+id/swBt" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="Only listen when earbuds are connected" android:textColor="#E6ECFF" />
+            <androidx.appcompat.widget.SwitchCompat android:id="@+id/swVoice" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Speak the alert" android:textColor="#E6ECFF" />
+            <androidx.appcompat.widget.SwitchCompat android:id="@+id/swChime" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Chime first" android:textColor="#E6ECFF" />
+            <androidx.appcompat.widget.SwitchCompat android:id="@+id/swNotif" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Notification" android:textColor="#E6ECFF" />
+            <androidx.appcompat.widget.SwitchCompat android:id="@+id/swVibrate" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Vibrate" android:textColor="#E6ECFF" />
+            <androidx.appcompat.widget.SwitchCompat android:id="@+id/swSaver" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Battery saver: pause during calls and at 15% battery" android:textColor="#E6ECFF" />
+            <androidx.appcompat.widget.SwitchCompat android:id="@+id/swMute" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Silence recognizer beeps (experimental)" android:textColor="#E6ECFF" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/btnBattery"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text="Phone setup for OPPO (battery &amp; auto-launch) ›"
+            android:textColor="#22D3EE"
+            android:textSize="13sp" />
+    </LinearLayout>
+</ScrollView>

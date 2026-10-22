@@ -1,0 +1,149 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>html,body{margin:0;height:100%;background:transparent;overflow:hidden}body{display:flex;align-items:center;justify-content:center}
+canvas{display:block;width:min(100vw,100vh);height:min(100vw,100vh);touch-action:manipulation;-webkit-tap-highlight-color:transparent}</style></head>
+<body><canvas id="m"></canvas><div id="log" hidden></div>
+<script src="three.min.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const S = { mode: 0, alert: false, level: 0 };
+function setState(m, a, l) { try { S.mode = m; if (a && !S.alert) { shake = 1; ripple(0); ripple(-.25); ripple(-.5); } S.alert = a; S.level = Math.max(S.level, l); } catch (e) {} }
+/* ---------- 3D scene ---------- */
+const cv = $('m');
+let shake = 0, lv = 0, tx = 0, ty = 0, ripple = () => {};
+cv.addEventListener('pointermove', e => { const r = cv.getBoundingClientRect(); tx = ((e.clientX - r.left) / r.width - .5) * 2; ty = ((e.clientY - r.top) / r.height - .5) * 2; });
+cv.addEventListener('pointerleave', () => { tx = ty = 0; });
+if (!window.THREE) { $('log').textContent = '⚠️ 3D engine could not load (needs internet once). The guard still works.'; }
+else {
+  const T = THREE, ren = new T.WebGLRenderer({ canvas: cv, antialias: true, alpha: true });
+  ren.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+  const scene = new T.Scene(), cam = new T.PerspectiveCamera(40, 1, .1, 100);
+  cam.position.set(0, .3, 8.5); cam.lookAt(0, -.1, 0);
+  scene.add(new T.AmbientLight(0x8899ff, .6));
+  const L1 = new T.PointLight(0x22d3ee, 2.2, 30), L2 = new T.PointLight(0xe879f9, 2, 30); scene.add(L1, L2);
+  const acc = new T.Color(0x5b6b8c), acc2 = new T.Color(0x334155), tc = new T.Color(), tc2 = new T.Color();
+  const TG = { rest: [0x5b6b8c, 0x334155], wait: [0xfbbf24, 0xf97316], listen: [0x22d3ee, 0xe879f9], alert: [0xff2d4b, 0xffc857] };
+  const mat = (c, o) => new T.MeshStandardMaterial(Object.assign({ color: c, roughness: .35, metalness: .25 }, o || {}));
+  const bas = c => new T.MeshBasicMaterial({ color: c });
+  const glow = bas(0x22d3ee), dark = mat(0x141a33, { metalness: .6, roughness: .25 });
+  const ball = (r, m, sx, sy, sz) => { const o = new T.Mesh(new T.SphereGeometry(r, 32, 24), m); o.scale.set(sx || 1, sy || 1, sz || 1); return o; };
+  const at = (o, x, y, z) => { o.position.set(x, y, z); return o; };
+  const arm = (x, m, hand) => { const p = new T.Group(); p.position.set(x, -.45, 0);
+    p.add(at(new T.Mesh(new T.CylinderGeometry(.13, .13, .7, 16), m), 0, -.35, 0), at(ball(.17, hand), 0, -.75, 0)); return p; };
+
+  const builders = {
+    robot() {
+      const g = new T.Group(), w = mat(0xe8eefc, { metalness: .1 });
+      g.add(at(ball(.8, w, 1, 1.1, .9), 0, -.9, 0));
+      const head = new T.Group(); head.position.y = .45; g.add(head);
+      head.add(ball(.85, w, 1.15, .9, 1), at(ball(.7, dark, 1.05, .6, .55), 0, 0, .55));
+      const eyes = [-.3, .3].map(x => { const e = at(ball(.12, glow, 1, 1, .4), x, 0, .93); head.add(e); return e; });
+      head.add(at(new T.Mesh(new T.CylinderGeometry(.04, .04, .5, 8), dark), 0, .95, 0), at(ball(.1, glow), 0, 1.25, 0));
+      [-1, 1].forEach(s => { const e = at(new T.Mesh(new T.CylinderGeometry(.2, .2, .2, 20), dark), s * 1.0, 0, 0); e.rotation.z = Math.PI / 2; head.add(e); });
+      const l = arm(-.95, w, dark), r = arm(.95, w, dark); g.add(l, r);
+      return { g, head, eyes, wave: r };
+    },
+    owl() {
+      const g = new T.Group(), p = mat(0x7c5cff), lt = mat(0xd9ccff, { roughness: .6 }), or = mat(0xffa43a);
+      g.add(ball(.95, p, 1, 1.15, .95), at(ball(.7, lt, 1, 1.1, .5), 0, -.15, .5));
+      const head = new T.Group(); head.position.y = .85; g.add(head);
+      head.add(ball(.78, p, 1.25, .9, 1));
+      const eyes = [];
+      [-1, 1].forEach(s => {
+        head.add(at(ball(.38, mat(0xffffff, { roughness: .2 }), 1, 1, .35), s * .42, .05, .62));
+        const i = at(ball(.18, glow, 1, 1, .4), s * .42, .05, .84); head.add(i, at(ball(.08, dark, 1, 1, .4), s * .42, .05, .93)); eyes.push(i);
+        const t = at(new T.Mesh(new T.ConeGeometry(.16, .45, 12), p), s * .65, .72, 0); t.rotation.z = -s * .45; head.add(t);
+        g.add(at(new T.Mesh(new T.CylinderGeometry(.14, .14, .12, 12), or), s * .35, -1.5, .25));
+      });
+      const bk = at(new T.Mesh(new T.ConeGeometry(.14, .3, 16), or), 0, -.12, .88); bk.rotation.x = Math.PI / 2; head.add(bk);
+      const wing = x => { const q = new T.Group(); q.position.set(x, .1, 0); q.add(at(ball(.35, mat(0x5a3fd0), .4, 1.1, .6), 0, -.45, 0)); return q; };
+      const l = wing(-1), r = wing(1); g.add(l, r);
+      return { g, head, eyes, wave: r };
+    },
+    alien() {
+      const g = new T.Group(), gr = mat(0x4ade80, { roughness: .3 });
+      g.add(ball(.55, mat(0x22c55e), 1, 1.1, .8).translateY(-1.1));
+      const head = new T.Group(); head.position.y = .4; g.add(head); head.add(ball(1, gr, 1.05, 1.2, 1));
+      const eyes = [at(ball(.12, glow, 1, 1, .5), 0, .65, .93)];
+      [-1, 1].forEach(s => {
+        const o = at(ball(.28, dark, .7, 1.2, .4), s * .42, .1, .88); o.rotation.z = -s * .5; head.add(o);
+        eyes.push(at(ball(.09, glow, 1, 1, .5), s * .42, .15, 1.0)); head.add(eyes[eyes.length - 1]);
+        const an = at(new T.Mesh(new T.CylinderGeometry(.03, .03, .6, 8), gr), s * .4, 1.4, 0); an.rotation.z = s * .25; head.add(an, at(ball(.1, glow), s * .5, 1.7, 0));
+      });
+      head.add(eyes[0]);
+      const l = arm(-.5, mat(0x22c55e), gr), r = arm(.5, mat(0x22c55e), gr); g.add(l, r);
+      return { g, head, eyes, wave: r };
+    }
+  };
+  let ch = null;
+  function setChar(n) {
+    if (ch) scene.remove(ch.g);
+    ch = builders[n](); scene.add(ch.g);
+    document.querySelectorAll('#pick button').forEach(b => b.classList.toggle('sel', b.dataset.c === n));
+    try { localStorage.setItem('nk_char', n); } catch (e) {}
+  }
+  document.querySelectorAll('#pick button').forEach(b => b.onclick = () => setChar(b.dataset.c));
+  let saved = 'robot'; try { saved = localStorage.getItem('nk_char') || 'robot'; } catch (e) {}
+  setChar(builders[saved] ? saved : 'robot'); window.setChar = setChar;
+
+  const shield = new T.Mesh(new T.IcosahedronGeometry(2.3, 1), new T.MeshBasicMaterial({ color: 0x22d3ee, wireframe: true, transparent: true, opacity: .22 }));
+  const ring1 = new T.Mesh(new T.TorusGeometry(2.9, .025, 8, 120), bas(0x22d3ee)), ring2 = new T.Mesh(new T.TorusGeometry(2.5, .02, 8, 120), bas(0xe879f9));
+  ring1.rotation.x = 1.2; ring2.rotation.y = 1.1;
+  const base = at(new T.Mesh(new T.CylinderGeometry(1.5, 1.7, .15, 48), dark), 0, -2.15, 0);
+  const baseRing = at(new T.Mesh(new T.TorusGeometry(1.52, .03, 8, 64), bas(0x22d3ee)), 0, -2.07, 0); baseRing.rotation.x = Math.PI / 2;
+  scene.add(shield, ring1, ring2, base, baseRing);
+  const sp = new Float32Array(900);
+  for (let i = 0; i < 300; i++) { const r = 5 + Math.random() * 7, a = Math.random() * 6.283, b = Math.acos(2 * Math.random() - 1); sp.set([r * Math.sin(b) * Math.cos(a), r * Math.cos(b), r * Math.sin(b) * Math.sin(a)], i * 3); }
+  const sg = new T.BufferGeometry(); sg.setAttribute('position', new T.BufferAttribute(sp, 3));
+  const stars = new T.Points(sg, new T.PointsMaterial({ color: 0xffffff, size: .07 })); scene.add(stars);
+  const orbs = Array.from({ length: 7 }, (_, i) => {
+    const m = new T.Mesh(i % 2 ? new T.OctahedronGeometry(.18) : new T.BoxGeometry(.24, .24, .24), mat(0xffffff, { metalness: .8, roughness: .2 }));
+    scene.add(m); return { m, p: i * Math.PI * 2 / 7, h: (Math.random() - .5) * 2.6 };
+  });
+  const rg = new T.TorusGeometry(1, .03, 8, 80);
+  const rs = Array.from({ length: 6 }, () => { const m = new T.Mesh(rg, new T.MeshBasicMaterial({ transparent: true, opacity: 0 })); m.rotation.x = .35; m.visible = false; scene.add(m); return { m, a: 2 }; });
+  ripple = (s = 0) => { const r = rs.find(x => x.a > 1); if (r) r.a = s; };
+
+  const size = () => ren.setSize(cv.clientWidth, cv.clientWidth, false);
+  addEventListener('resize', size); size();
+  let t = 0, last = performance.now(), blink = 0, nextBlink = 2, lastRip = 0, hx = 0, hy = 0;
+  function frame(now) {
+    const dt = Math.min(.05, (now - last) / 1000); last = now; t += dt;
+    lv += ((S.mode === 2 ? S.level : 0) - lv) * Math.min(1, dt * 9);
+    S.level = Math.max(0, S.level - dt * 1.4); shake = Math.max(0, shake - dt * 1.2);
+    const p = S.alert ? TG.alert : S.mode === 2 ? TG.listen : S.mode === 1 ? TG.wait : TG.rest, f = Math.min(1, dt * 4);
+    acc.lerp(tc.set(p[0]), f); acc2.lerp(tc2.set(p[1]), f);
+    glow.color.copy(acc); shield.material.color.copy(acc); ring1.material.color.copy(acc); ring2.material.color.copy(acc2); baseRing.material.color.copy(acc);
+    L1.color.copy(acc); L2.color.copy(acc2);
+    L1.position.set(Math.cos(t) * 4, 2, 4); L2.position.set(-Math.cos(t * .8) * 4, -1, 3);
+    const awake = S.mode === 2 || S.alert;
+    stars.rotation.y += dt * (.03 + lv * .4);
+    shield.rotation.y += dt * .2; shield.rotation.x += dt * .1; shield.scale.setScalar(1 + lv * .12 + .02 * Math.sin(t * 2));
+    ring1.rotation.z += dt * (.3 + lv * 2); ring2.rotation.x += dt * .5;
+    orbs.forEach(o => {
+      const a = t * (awake ? .7 : .25) + o.p, r = 2.6 + lv * .4;
+      o.m.position.set(Math.cos(a) * r, o.h + Math.sin(t + o.p) * .2, Math.sin(a) * r * .5);
+      o.m.rotation.x += dt; o.m.rotation.y += dt * 1.3; o.m.scale.setScalar(1 + lv * .6);
+      o.m.material.color.copy(acc); o.m.material.emissive.copy(acc).multiplyScalar(.3);
+    });
+    hx += (tx * .6 - hx) * Math.min(1, dt * 5); hy += (ty * .4 - hy) * Math.min(1, dt * 5);
+    ch.g.position.y = Math.sin(t * 1.6) * .12 - .1 + (S.alert ? Math.abs(Math.sin(t * 9)) * .5 : 0);
+    ch.g.position.x = shake > 0 ? Math.sin(t * 70) * .06 * shake : 0;
+    ch.g.scale.setScalar(1 + lv * .06); ch.g.rotation.y = Math.sin(t * .5) * .15 + hx * .3;
+    ch.head.rotation.y = hx; ch.head.rotation.x = hy * .6;
+    ch.wave.rotation.z = S.alert ? 2.4 + Math.sin(t * 14) * .5 : .15 + Math.sin(t * 1.5) * .05;
+    blink = Math.max(0, blink - dt); nextBlink -= dt; if (nextBlink < 0) { nextBlink = 2 + Math.random() * 3; blink = .12; }
+    const ey = blink > 0 ? .1 : S.alert ? 1.5 : 1; ch.eyes.forEach(e => { e.scale.y += (ey - e.scale.y) * .4; });
+    rs.forEach(r => {
+      if (r.a <= 1) r.a += dt * .6;
+      const a = r.a, v = a >= 0 && a <= 1; r.m.visible = v;
+      if (v) { r.m.scale.setScalar(1 + a * 3.2); r.m.material.opacity = .9 * (1 - a); r.m.material.color.copy(S.alert ? acc : acc2); }
+    });
+    if (S.mode === 2 && lv > .6 && t - lastRip > .5) { ripple(.2); lastRip = t; }
+    ren.render(scene, cam); requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+
+$('m').addEventListener('click', () => { try { Bridge.tap(); } catch (e) {} });
+</script></body></html>
